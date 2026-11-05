@@ -93,4 +93,4 @@ with col2:
     )
 
 st.divider()
-st.info("💡 **Project Context:** Built for Dr. Malak’s Forensic DNA Phenotyping research proposal evaluating intermediate eye color prediction across the Egypt Genome Project dataset.")
+
