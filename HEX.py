@@ -16,9 +16,9 @@ st.divider()
 st.sidebar.header("Input Probability Sliders")
 st.sidebar.markdown("Adjust the posterior probabilities generated from the 41-SNP panel:")
 
-p_blue = st.sidebar.slider("Probability: Blue ($P_{\text{Blue}} $)", 0.0, 1.0, 0.10, 0.01)
-p_inter = st.sidebar.slider("Probability: Intermediate ($P_{\text{Intermediate}} $)", 0.0, 1.0, 0.75, 0.01)
-p_brown = st.sidebar.slider("Probability: Brown ($P_{\text{Brown}} $)", 0.0, 1.0, 0.15, 0.01)
+p_blue = st.sidebar.slider("P(Blue) ", 0.0, 1.0, 0.10, 0.01)
+p_inter = st.sidebar.slider("P(Intermediate)", 0.0, 1.0, 0.75, 0.01)
+p_brown = st.sidebar.slider("P(Brown)", 0.0, 1.0, 0.15, 0.01)
 
 # Normalize probabilities so they always sum to 1.0
 total = p_blue + p_inter + p_brown
