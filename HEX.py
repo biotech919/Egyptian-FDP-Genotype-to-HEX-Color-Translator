@@ -1,9 +1,8 @@
 import streamlit as st
 import numpy as np
 import pandas as pd
-import matplotlib.pyplot as plt
 
-# App Title & Layout
+# App Title & Layout Configuration
 st.set_page_config(page_title="HIrisPlex-S HEX Translator", layout="centered")
 st.title("🧬 Egyptian FDP: Genotype-to-HEX Color Translator")
 st.markdown("""
@@ -17,20 +16,20 @@ st.divider()
 st.sidebar.header("Input Probability Sliders")
 st.sidebar.markdown("Adjust the posterior probabilities generated from the 41-SNP panel:")
 
-p_blue = st.sidebar.slider("Probability: Blue ($P_{\text{Blue}} $)", 0.0, 1.0, 0.10, 0.01)
-p_inter = st.sidebar.slider("Probability: Intermediate ($P_{\text{Intermediate}} $)", 0.0, 1.0, 0.75, 0.01)
-p_brown = st.sidebar.slider("Probability: Brown ($P_{\text{Brown}} $)", 0.0, 1.0, 0.15, 0.01)
+p_blue = st.sidebar.slider("Probability: Blue ($P_{\text{Blue}}$)", 0.0, 1.0, 0.10, 0.01)
+p_inter = st.sidebar.slider("Probability: Intermediate ($P_{\text{Intermediate}}$)", 0.0, 1.0, 0.75, 0.01)
+p_brown = st.sidebar.slider("Probability: Brown ($P_{\text{Brown}}$)", 0.0, 1.0, 0.15, 0.01)
 
-# Normalize probabilities so they always sum to 1.0
+# Normalize probabilities so they always sum to exactly 1.0 (100%)
 total = p_blue + p_inter + p_brown
 if total > 0:
     p_blue_norm = p_blue / total
-    p_brown_norm = p_brown / total
     p_inter_norm = p_inter / total
+    p_brown_norm = p_brown / total
 else:
     p_blue_norm, p_inter_norm, p_brown_norm = 0.33, 0.33, 0.34
 
-# Define RGB Color Anchors
+# Define Standard RGB Color Anchors for Phenotypic Extremes
 COLOR_ANCHORS = {
     'blue': np.array([70, 130, 180]),          # Steel Blue
     'intermediate': np.array([120, 140, 100]),  # Hazel / Green-Grey
@@ -38,10 +37,11 @@ COLOR_ANCHORS = {
 }
 
 def rgb_to_hex(rgb_array):
+    """Converts a numpy RGB array into a standard 6-character HEX color string."""
     clipped = np.clip(rgb_array, 0, 255)
     return '#{:02x}{:02x}{:02x}'.format(int(clipped[0]), int(clipped[1]), int(clipped[2]))
 
-# Calculate Blended RGB & HEX
+# Calculate Blended RGB Vector
 blended_rgb = (
     (p_blue_norm * COLOR_ANCHORS['blue']) +
     (p_inter_norm * COLOR_ANCHORS['intermediate']) +
@@ -49,20 +49,20 @@ blended_rgb = (
 )
 hex_output = rgb_to_hex(blended_rgb)
 
-# Main Display Area
+# Main Dashboard Display Columns
 col1, col2 = st.columns(2)
 
 with col1:
     st.subheader("📊 Normalized Probabilities")
     prob_df = pd.DataFrame({
         "Phenotype": ["Blue", "Intermediate", "Brown"],
-        "Probability": [p_blue_norm, p_inter_norm, p_brown_norm]
+        "Probability Score": [f"{p_blue_norm:.2f}", f"{p_inter_norm:.2f}", f"{p_brown_norm:.2f}"]
     })
     st.dataframe(prob_df.set_index("Phenotype"), use_container_width=True)
 
 with col2:
     st.subheader("🎨 Objective Color Output")
-    # Display Color Swatch Block using HTML/CSS
+    # Render dynamic color swatch box using native HTML/CSS block
     st.markdown(
         f"""
         <div style="
@@ -73,8 +73,9 @@ with col2:
             align-items: center; 
             justify-content: center;
             border: 2px solid #ccc;
+            box-shadow: 0px 4px 6px rgba(0,0,0,0.1);
         ">
-            <span style="color: white; font-weight: bold; font-size: 20px; text-shadow: 1px 1px 2px black;">
+            <span style="color: white; font-weight: bold; font-size: 22px; text-shadow: 1px 1px 3px rgba(0,0,0,0.8);">
                 {hex_output}
             </span>
         </div>
@@ -83,4 +84,3 @@ with col2:
     )
 
 st.divider()
-st.info("💡 **Project Context:** Built for Dr. Malak’s Forensic DNA Phenotyping research proposal evaluating intermediate eye color prediction across the Egypt Genome Project dataset.")
